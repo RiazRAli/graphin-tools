@@ -60,7 +60,9 @@ if uploaded_file:
                 else:
                     sns.boxplot(data=df[selected_cols], ax=ax)
                     ax.set_title("Box Plot of Selected Columns")
-                st.pyplot(fig)
+               with st.container():
+                    st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
             # --- Histogram ---
             elif plot_type == "Histogram":
