@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from scipy.stats import norm
 
 st.set_page_config(page_title="Graphing Dashboard", layout="wide")
 st.title("📊 Graphing Dashboard")
@@ -20,7 +21,6 @@ if uploaded_file:
     if not numeric_cols:
         st.warning("No numeric columns found.")
     else:
-        # Step 1: Filtering
         filter_by = st.radio("Filter dataset by category?", ["No", "Yes"])
         if filter_by == "Yes" and cat_cols:
             filter_col = st.selectbox("Select a column to filter by", cat_cols)
@@ -31,12 +31,10 @@ if uploaded_file:
             else:
                 st.warning("No values selected; using full dataset.")
 
-        # Step 2: Select plot type and grouping
         plot_type = st.selectbox(
             "Choose a graph type",
             ["Box Plot", "Interval Plot", "Histogram", "Curve", "Smoothed Histogram", "Dot Plot", "Matrix Plots", "Pareto Chart"]
         )
-
 
         selected_cols = st.multiselect("Select numeric columns to plot", numeric_cols, default=numeric_cols)
 
@@ -46,11 +44,9 @@ if uploaded_file:
             if group_by == "None":
                 group_by = None
 
-        # Step 3: Plot
         if selected_cols:
             st.subheader(f"{plot_type} for {', '.join(selected_cols)}")
 
-            # --- Box Plot ---
             if plot_type == "Box Plot":
                 fig, ax = plt.subplots(figsize=(10, 6))
                 if group_by:
@@ -60,10 +56,10 @@ if uploaded_file:
                 else:
                     sns.boxplot(data=df[selected_cols], ax=ax)
                     ax.set_title("Box Plot of Selected Columns")
+                with st.container():
                     st.pyplot(fig)
                     st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-            # --- Histogram ---
             elif plot_type == "Histogram":
                 fig, ax = plt.subplots(figsize=(10, 6))
                 if group_by:
@@ -75,11 +71,10 @@ if uploaded_file:
                         sns.histplot(df[col], label=col, kde=False, stat="density", ax=ax)
                 ax.set_title("Histogram")
                 ax.legend()
-                st.pyplot(fig)
-                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+                with st.container():
+                    st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-
-            # --- Curve (KDE) ---
             elif plot_type == "Curve":
                 fig, ax = plt.subplots(figsize=(10, 6))
                 if group_by:
@@ -91,17 +86,13 @@ if uploaded_file:
                         sns.kdeplot(df[col].dropna(), label=col, ax=ax)
                 ax.set_title("Density Curve (KDE)")
                 ax.legend()
-                st.pyplot(fig)
-                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+                with st.container():
+                    st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-
-            # --- Smoothed Curve ---
             elif plot_type == "Smoothed Histogram":
-                from scipy.stats import norm
-
                 fig, ax = plt.subplots(figsize=(10, 6))
                 x_range = st.slider("X-Range Span (in Std Devs)", 2, 6, 4)
-
                 if group_by:
                     for name, group in df.groupby(group_by):
                         for col in selected_cols:
@@ -119,51 +110,39 @@ if uploaded_file:
                             x = np.linspace(mu - x_range*sigma, mu + x_range*sigma, 200)
                             y = norm.pdf(x, mu, sigma)
                             ax.plot(x, y, label=col)
-
                 ax.set_title("Normal Curve Fit")
                 ax.set_ylabel("Probability Density")
                 ax.legend()
-                st.pyplot(fig)
-                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+                with st.container():
+                    st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-
-
-
-            # --- Dot Plot ---
             elif plot_type == "Dot Plot":
                 fig, ax = plt.subplots(figsize=(10, 6))
-                
                 if group_by:
-                    # Melt the data into long-form for grouped dot plotting
                     melted = df[[group_by] + selected_cols].melt(id_vars=group_by, var_name="Variable", value_name="Value")
                     sns.stripplot(data=melted, x=group_by, y="Value", hue="Variable", dodge=True, jitter=True, ax=ax)
                     ax.set_title(f"Dot Plot by {group_by}")
                     ax.legend(title="Variable")
                 else:
-                    # Melt into variable-name groupings
                     melted = df[selected_cols].melt(var_name="Variable", value_name="Value")
                     sns.stripplot(data=melted, x="Variable", y="Value", jitter=True, ax=ax)
                     ax.set_title("Dot Plot of Selected Columns")
+                with st.container():
+                    st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-                st.pyplot(fig)
-                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
-
-
-
-            # --- Interval Plot ---
             elif plot_type == "Interval Plot":
                 fig, ax = plt.subplots(figsize=(10, 6))
                 if group_by:
                     categories = df[group_by].dropna().unique()
                     x = np.arange(len(categories))
                     width = 0.8 / len(selected_cols)
-
                     for i, col in enumerate(selected_cols):
                         means = df.groupby(group_by)[col].mean()
                         stds = df.groupby(group_by)[col].std()
                         offsets = x + i * width - (width * (len(selected_cols) - 1) / 2)
                         ax.errorbar(offsets, means, yerr=stds, fmt='o', capsize=5, label=col)
-
                     ax.set_xticks(x)
                     ax.set_xticklabels(categories)
                     ax.set_xlabel(group_by)
@@ -177,11 +156,10 @@ if uploaded_file:
                     ax.set_xlabel("Variable")
                     ax.set_ylabel("Mean Value")
                     ax.set_title("Interval Plot (Mean ± Std Dev)")
-                st.pyplot(fig)
-                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+                with st.container():
+                    st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-
-            # --- Matrix Plots ---
             elif plot_type == "Matrix Plots":
                 if len(selected_cols) < 2:
                     st.warning("Matrix plots require at least 2 numeric columns.")
@@ -190,8 +168,6 @@ if uploaded_file:
                     st.pyplot(fig)
                     st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
-
-            # --- Pareto Chart ---
             elif plot_type == "Pareto Chart":
                 for col in selected_cols:
                     fig, ax1 = plt.subplots(figsize=(10, 6))
@@ -207,8 +183,9 @@ if uploaded_file:
                     ax2.set_ylabel("Cumulative %")
                     ax2.axhline(0.8, color='gray', linestyle='--')
                     ax1.set_title(f"Pareto Chart for {col}" + (f" by {group_by}" if group_by else ""))
-                    st.pyplot(fig)
-                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+                    with st.container():
+                        st.pyplot(fig)
+                        st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
 
         else:
             st.warning("Please select at least one numeric column.")
