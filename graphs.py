@@ -75,6 +75,8 @@ if uploaded_file:
                 ax.set_title("Histogram")
                 ax.legend()
                 st.pyplot(fig)
+                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
 
             # --- Curve (KDE) ---
             elif plot_type == "Curve":
@@ -89,6 +91,8 @@ if uploaded_file:
                 ax.set_title("Density Curve (KDE)")
                 ax.legend()
                 st.pyplot(fig)
+                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
 
             # --- Smoothed Curve ---
             elif plot_type == "Smoothed Histogram":
@@ -119,6 +123,8 @@ if uploaded_file:
                 ax.set_ylabel("Probability Density")
                 ax.legend()
                 st.pyplot(fig)
+                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
 
 
 
@@ -139,6 +145,8 @@ if uploaded_file:
                     ax.set_title("Dot Plot of Selected Columns")
 
                 st.pyplot(fig)
+                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
 
 
             # --- Interval Plot ---
@@ -169,6 +177,8 @@ if uploaded_file:
                     ax.set_ylabel("Mean Value")
                     ax.set_title("Interval Plot (Mean ± Std Dev)")
                 st.pyplot(fig)
+                st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
 
             # --- Matrix Plots ---
             elif plot_type == "Matrix Plots":
@@ -177,6 +187,8 @@ if uploaded_file:
                 else:
                     fig = sns.pairplot(df[selected_cols])
                     st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
 
             # --- Pareto Chart ---
             elif plot_type == "Pareto Chart":
@@ -195,5 +207,7 @@ if uploaded_file:
                     ax2.axhline(0.8, color='gray', linestyle='--')
                     ax1.set_title(f"Pareto Chart for {col}" + (f" by {group_by}" if group_by else ""))
                     st.pyplot(fig)
+                    st.caption("Created by: Riaz Ali, Rev 0 – May 2025")
+
         else:
             st.warning("Please select at least one numeric column.")
